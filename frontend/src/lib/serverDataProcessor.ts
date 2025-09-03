@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
-import { AnalysisData, ProcessedKeyword, Competitor, ProcessedProduct } from '@/types/analysis'
+import { AnalysisData, ProcessedKeyword, Competitor, ProcessedProduct, RootKeyword } from '@/types/analysis'
 import { DatabaseService } from './database'
 
 // Types for CSV parsing
@@ -297,9 +297,9 @@ export class ServerDataProcessor {
   }
 
   // Generate root keywords by extracting common root words from keyword phrases
-  private static generateRootKeywords(keywords: any[]): any[] {
+  private static generateRootKeywords(keywords: ProcessedKeyword[]): RootKeyword[] {
     const rootWordMap = new Map<string, {
-      keywords: any[]
+      keywords: ProcessedKeyword[]
       totalSV: number
       brandCount: number
       nonBrandCount: number
@@ -339,7 +339,7 @@ export class ServerDataProcessor {
 
     // Convert to root keywords format and filter out roots with less than 2 keywords
     const rootKeywords = Array.from(rootWordMap.entries())
-      .filter(([_, data]) => data.keywords.length >= 2)
+      .filter(([, data]) => data.keywords.length >= 2)
       .map(([rootWord, data]) => {
         const totalCount = data.brandCount + data.nonBrandCount
         const brandPercentage = totalCount > 0 ? Math.round((data.brandCount / totalCount) * 100) : 0

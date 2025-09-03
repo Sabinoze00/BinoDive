@@ -120,27 +120,6 @@ export const ProductDetailsTable: React.FC<ProductDetailsTableProps> = ({
     }
   }
 
-  const extractBulletPoints = (description: string): string[] => {
-    if (!description) return []
-    
-    // Try to extract bullet points from various formats
-    const bulletPatterns = [
-      /•\s*(.*?)(?=•|\n|$)/g,  // • bullet points
-      /-\s*(.*?)(?=-|\n|$)/g,  // - bullet points  
-      /\*\s*(.*?)(?=\*|\n|$)/g, // * bullet points
-      /\d+\.\s*(.*?)(?=\d+\.|\n|$)/g, // 1. numbered points
-    ]
-    
-    for (const pattern of bulletPatterns) {
-      const matches = [...description.matchAll(pattern)]
-      if (matches.length > 0) {
-        return matches.map(match => match[1].trim()).filter(point => point.length > 10)
-      }
-    }
-    
-    // If no bullet points found, split by sentences
-    return description.split(/[.!?]/).filter(sentence => sentence.trim().length > 20).slice(0, 5)
-  }
 
   return (
     <div className="space-y-6">
