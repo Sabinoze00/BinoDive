@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import { AnalysisData, ProcessedKeyword, Competitor, ProcessedProduct } from '@/types/analysis'
+import { DatabaseService } from './database'
 
 // Types for CSV parsing
 interface KeywordRow {
@@ -32,8 +33,7 @@ interface ProductRow {
   asinVariation?: string
 }
 
-// In-memory storage for Vercel (would use database in production)
-const sessions = new Map<string, AnalysisData>()
+// Using Turso database for persistent storage
 
 export class ServerDataProcessor {
   static async processFiles(
@@ -52,10 +52,11 @@ export class ServerDataProcessor {
       // Process and combine data
       const analysisData = this.combineData(keywordData, businessData, productData)
       
-      // Generate unique ID and set it
+      // Generate unique ID and save to database
       const analysisId = uuidv4()
       analysisData.analysisId = analysisId
-      sessions.set(analysisId, analysisData)
+      
+      await DatabaseService.saveAnalysis(analysisId, analysisData)
 
       return analysisId
     } catch (error) {
@@ -63,12 +64,12 @@ export class ServerDataProcessor {
     }
   }
 
-  static getAnalysisData(analysisId: string): AnalysisData | null {
-    return sessions.get(analysisId) || null
+  static async getAnalysisData(analysisId: string): Promise<AnalysisData | null> {
+    return await DatabaseService.getAnalysis(analysisId)
   }
 
-  static updateKeywords(analysisId: string, deletedKeywords: string[], restoredKeywords: string[]): AnalysisData | null {
-    const data = sessions.get(analysisId)
+  static async updateKeywords(analysisId: string, deletedKeywords: string[], restoredKeywords: string[]): Promise<AnalysisData | null> {
+    const data = await DatabaseService.getAnalysis(analysisId)
     if (!data) return null
 
     // Update keyword deletion status
@@ -83,7 +84,8 @@ export class ServerDataProcessor {
 
     // Recalculate metrics
     const updatedData = this.recalculateMetrics(data)
-    sessions.set(analysisId, updatedData)
+    
+    await DatabaseService.updateAnalysis(analysisId, updatedData)
 
     return updatedData
   }

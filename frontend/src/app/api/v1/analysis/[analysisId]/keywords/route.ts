@@ -28,7 +28,7 @@ export async function PUT(
     }
 
     // Update keywords
-    const updatedData = ServerDataProcessor.updateKeywords(analysisId, deleted, restored)
+    const updatedData = await ServerDataProcessor.updateKeywords(analysisId, deleted, restored)
 
     if (!updatedData) {
       return NextResponse.json({

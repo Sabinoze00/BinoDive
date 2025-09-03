@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     )
 
     // Get analysis data for summary
-    const analysisData = ServerDataProcessor.getAnalysisData(analysisId)
+    const analysisData = await ServerDataProcessor.getAnalysisData(analysisId)
 
     if (!analysisData) {
       return NextResponse.json({

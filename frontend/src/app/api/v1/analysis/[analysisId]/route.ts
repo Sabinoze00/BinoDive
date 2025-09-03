@@ -17,7 +17,7 @@ export async function GET(
     }
 
     // Get analysis data
-    const analysisData = ServerDataProcessor.getAnalysisData(analysisId)
+    const analysisData = await ServerDataProcessor.getAnalysisData(analysisId)
 
     if (!analysisData) {
       return NextResponse.json({
