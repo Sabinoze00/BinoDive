@@ -90,12 +90,6 @@ function DashboardContent() {
     await updateProducts(deleted, restored)
   }
 
-  // Auto-minimize upload section after successful upload
-  React.useEffect(() => {
-    if (data && !isLoading && !error) {
-      setUploadSectionMinimized(true)
-    }
-  }, [data, isLoading, error])
 
   // Track tab changes
   const handleTabChange = (newTab: 'mlk' | 'root' | 'products' | 'market') => {
