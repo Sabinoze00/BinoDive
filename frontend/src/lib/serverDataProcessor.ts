@@ -354,7 +354,7 @@ export class ServerDataProcessor {
           nonBrandCount: data.nonBrandCount,
           brandPercentage,
           averageRelevance,
-          keywords: data.keywords.map(kw => kw.keywordPhrase),
+          relatedPhrases: data.keywords.map(kw => kw.keywordPhrase),
           isDeleted: false
         }
       })
