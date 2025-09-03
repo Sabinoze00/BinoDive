@@ -401,6 +401,13 @@ export class ServerDataProcessor {
     keywordData.forEach(kw => {
       Object.keys(kw.rankings).forEach(asin => asinSet.add(asin))
     })
+    
+    console.log('🔍 Analysis data combination starting...')
+    console.log('- Keywords processed:', keywordData.length)
+    console.log('- Business records:', businessData.length) 
+    console.log('- Product records:', productData.length)
+    console.log('- Unique ASINs from rankings:', asinSet.size)
+    console.log('- Sample ASINs:', Array.from(asinSet).slice(0, 5))
 
     // Create competitors from business data
     const competitors: Competitor[] = Array.from(asinSet).map(asin => {
@@ -467,7 +474,11 @@ export class ServerDataProcessor {
     }))
 
     // Calculate product strengths (same logic as competitors)
-    products.forEach(product => {
+    console.log('🔧 Starting product strength calculation...')
+    console.log('Total products to process:', products.length)
+    console.log('Total processed keywords:', processedKeywords.length)
+    
+    products.forEach((product, index) => {
       const relevantKeywords = processedKeywords.filter(kw => 
         kw.rankings[product.asin] && kw.rankings[product.asin] <= 30
       )
@@ -485,7 +496,21 @@ export class ServerDataProcessor {
       // Also update keyword count and matching keywords
       product.keywordCount = totalKeywordsCount
       product.matchingKeywords = relevantKeywords.map(kw => kw.keywordPhrase)
+      
+      // Debug first 3 products
+      if (index < 3) {
+        console.log(`🎯 Product ${index + 1} (${product.asin}):`, {
+          brand: product.brand,
+          relevantKeywords: totalKeywordsCount,
+          totalActiveKeywords: activeKeywordsCount,
+          strengthPercentage: product.strengthPercentage.toFixed(2) + '%',
+          strengthLevel: product.strengthLevel,
+          sampleKeywords: relevantKeywords.slice(0, 3).map(kw => `${kw.keywordPhrase} (#${kw.rankings[product.asin]})`)
+        })
+      }
     })
+    
+    console.log('✅ Product strength calculation completed!')
 
     // Generate root keywords
     const rootKeywords = this.generateRootKeywords(processedKeywords)
