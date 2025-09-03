@@ -11,7 +11,7 @@ import { ProductDetailsTable } from '@/components/dashboard/ProductDetailsTable'
 import { ProductTableView } from '@/components/dashboard/ProductTableView'
 import { MarketAnalysis } from '@/components/dashboard/MarketAnalysis'
 import { AuditGeneratorComponent } from '@/components/audit/AuditGenerator'
-import { AnalysisProvider, useAnalysis } from '@/hooks/useAnalysis'
+import { useAnalysis } from '@/hooks/useAnalysis'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -367,9 +367,5 @@ function DashboardContent() {
 }
 
 export default function HomePage() {
-  return (
-    <AnalysisProvider>
-      <DashboardContent />
-    </AnalysisProvider>
-  )
+  return <DashboardContent />
 }

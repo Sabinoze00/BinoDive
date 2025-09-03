@@ -2,10 +2,10 @@
 
 import { useRouter } from 'next/navigation'
 import { FileUploader } from '@/components/upload/FileUploader'
-import { AnalysisProvider, useAnalysis } from '@/hooks/useAnalysis'
+import { useAnalysis } from '@/hooks/useAnalysis'
 import { sessionTracker } from '@/lib/sessionTracker'
 
-function UploadContent() {
+export default function UploadPage() {
   const router = useRouter()
   const { 
     isUploading, 
@@ -63,13 +63,5 @@ function UploadContent() {
         />
       </div>
     </div>
-  )
-}
-
-export default function UploadPage() {
-  return (
-    <AnalysisProvider>
-      <UploadContent />
-    </AnalysisProvider>
   )
 }
