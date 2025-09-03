@@ -41,7 +41,7 @@ class AnalysisApiClient {
       try {
         const error = await response.json()
         errorMessage = error.error || error.message || errorMessage
-      } catch (e) {
+      } catch {
         // If can't parse JSON, use the status text
       }
       throw new Error(errorMessage)
@@ -63,7 +63,7 @@ class AnalysisApiClient {
       try {
         const error = await response.json()
         errorMessage = error.error || error.message || errorMessage
-      } catch (e) {
+      } catch {
         // If can't parse JSON, use the status text
       }
       throw new Error(errorMessage)

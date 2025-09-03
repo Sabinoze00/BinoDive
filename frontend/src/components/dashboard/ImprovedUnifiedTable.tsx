@@ -11,7 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Trash2, RotateCcw, Search, ArrowUpDown, ArrowUp, ArrowDown, X } from 'lucide-react'
-import type { AnalysisData, ProcessedKeyword } from '@/types/analysis'
+import type { AnalysisData } from '@/types/analysis'
 
 type SortField = 'keywordPhrase' | 'searchVolume' | 'relevance' | 'isBrand'
 type SortDirection = 'asc' | 'desc'
@@ -81,7 +81,7 @@ export const ImprovedUnifiedTable: React.FC<ImprovedUnifiedTableProps> = ({
     if (strengthFilter.size > 0) {
       filtered = filtered.filter(comp => strengthFilter.has(comp.strengthLevel as 'Molto Forte' | 'Forte' | 'Medio' | 'Debole'))
       // Track filter application
-      sessionTracker.trackFilter('strength', Array.from(strengthFilter), filtered.length)
+      sessionTracker.trackFilter('strength', Array.from(strengthFilter).join(', '), filtered.length)
     }
     if (revenueFilter) {
       const minRevenue = parseFloat(revenueFilter)
@@ -102,7 +102,7 @@ export const ImprovedUnifiedTable: React.FC<ImprovedUnifiedTableProps> = ({
   }, [data.competitorAnalysis, strengthFilter, revenueFilter])
 
   const filteredKeywords = useMemo(() => {
-    let filtered = data.keywordList.filter(kw => {
+    const filtered = data.keywordList.filter(kw => {
       if (!showDeleted && kw.isDeleted) return false
       if (brandFilter === 'brand' && !kw.isBrand) return false
       if (brandFilter === 'non-brand' && kw.isBrand) return false
@@ -388,6 +388,7 @@ export const ImprovedUnifiedTable: React.FC<ImprovedUnifiedTableProps> = ({
                   {activeCompetitors.map((competitor) => (
                     <TableHead key={competitor.asin} className="text-center p-2 min-w-[120px]">
                       <div className="flex flex-col items-center space-y-2">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img 
                           src={competitor.imageUrl || '/placeholder-product.png'} 
                           alt={competitor.brand}

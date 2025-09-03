@@ -10,7 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Trash2, RotateCcw, Eye, EyeOff } from 'lucide-react'
 import { KeywordFilters, SortField, SortDirection } from './KeywordFilters'
-import type { AnalysisData, ProcessedKeyword } from '@/types/analysis'
+import type { AnalysisData } from '@/types/analysis'
 
 interface UnifiedTableProps {
   data: AnalysisData
@@ -31,7 +31,7 @@ export const UnifiedTable: React.FC<UnifiedTableProps> = ({
   const [showBrandOnly, setShowBrandOnly] = useState(false)
 
   const filteredKeywords = useMemo(() => {
-    let filtered = data.keywordList.filter(kw => {
+    const filtered = data.keywordList.filter(kw => {
       // Filtra eliminate
       if (!showDeleted && kw.isDeleted) return false
       

@@ -1,4 +1,4 @@
-import type { SessionEvent, UserProduct, UserAnalysis, AuditDataInput } from '../../../../shared/types/audit'
+import type { SessionEvent, UserProduct, UserAnalysis, AuditDataInput, BrandOpportunity, KeywordGap, PriceGap, CompetitorSegment } from '@/types/audit'
 import type { AnalysisData } from '@/types/analysis'
 
 class SessionTracker {
@@ -16,7 +16,7 @@ class SessionTracker {
     return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
   }
 
-  private addEvent(eventType: SessionEvent['eventType'], action: string, details: any = {}, duration?: number) {
+  private addEvent(eventType: SessionEvent['eventType'], action: string, details: Record<string, unknown> = {}, duration?: number) {
     const event: SessionEvent = {
       id: `event_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       timestamp: new Date(),
@@ -50,7 +50,7 @@ class SessionTracker {
     if (savedEvents) {
       try {
         this.events = JSON.parse(savedEvents)
-      } catch (e) {
+      } catch {
         console.warn('Failed to load session events from localStorage')
       }
     }
@@ -69,7 +69,7 @@ class SessionTracker {
     }, processingTime)
   }
 
-  trackFilter(filterType: string, filterValue: any, resultsCount: number) {
+  trackFilter(filterType: string, filterValue: string | boolean | number, resultsCount: number) {
     this.addEvent('filter', 'filter_applied', {
       filterType,
       filterValue,
@@ -158,12 +158,12 @@ class SessionTracker {
       .filter(e => e.details.competitors || e.details.asin)
       .map(e => e.details.competitors || [e.details.asin])
       .flat()
-      .filter(Boolean)
+      .filter(Boolean) as string[]
 
     const competitorCounts = competitorInteractions.reduce((acc: Record<string, number>, comp: string) => {
       acc[comp] = (acc[comp] || 0) + 1
       return acc
-    }, {})
+    }, {} as Record<string, number>)
 
     const focusedCompetitors = Object.entries(competitorCounts)
       .sort(([, a], [, b]) => b - a)
@@ -205,19 +205,19 @@ class SessionTracker {
         },
         focusedCompetitors,
         appliedFilters: filterEvents.map(e => ({
-          type: e.details.filterType,
+          type: (e.details.filterType as string) || 'unknown',
           value: e.details.filterValue,
-          resultsCount: e.details.resultsCount
+          resultsCount: (e.details.resultsCount as number) || 0
         })),
         deletedItems: {
-          keywords: deleteEvents.filter(e => e.details.itemType === 'keywords').map(e => e.details.items).flat(),
-          competitors: deleteEvents.filter(e => e.details.itemType === 'competitors').map(e => e.details.items).flat(),
-          products: deleteEvents.filter(e => e.details.itemType === 'products').map(e => e.details.items).flat()
+          keywords: deleteEvents.filter(e => e.details.itemType === 'keywords').map(e => e.details.items).flat() as string[],
+          competitors: deleteEvents.filter(e => e.details.itemType === 'competitors').map(e => e.details.items).flat() as string[],
+          products: deleteEvents.filter(e => e.details.itemType === 'products').map(e => e.details.items).flat() as string[]
         },
         restoredItems: {
-          keywords: restoreEvents.filter(e => e.details.itemType === 'keywords').map(e => e.details.items).flat(),
-          competitors: restoreEvents.filter(e => e.details.itemType === 'competitors').map(e => e.details.items).flat(),
-          products: restoreEvents.filter(e => e.details.itemType === 'products').map(e => e.details.items).flat()
+          keywords: restoreEvents.filter(e => e.details.itemType === 'keywords').map(e => e.details.items).flat() as string[],
+          competitors: restoreEvents.filter(e => e.details.itemType === 'competitors').map(e => e.details.items).flat() as string[],
+          products: restoreEvents.filter(e => e.details.itemType === 'products').map(e => e.details.items).flat() as string[]
         }
       },
 
@@ -230,10 +230,10 @@ class SessionTracker {
 
   private identifyOpportunities(analysisData: AnalysisData, userProduct?: UserProduct) {
     // Basic opportunity identification logic
-    const brandDefense = []
-    const brandAttack = []
-    const keywordGaps = []
-    const priceGaps = []
+    const brandDefense: BrandOpportunity[] = []
+    const brandAttack: BrandOpportunity[] = []
+    const keywordGaps: KeywordGap[] = []
+    const priceGaps: PriceGap[] = []
 
     // Look for brand defense opportunities (brand keywords with no strong competitor)
     if (userProduct) {
@@ -293,7 +293,7 @@ class SessionTracker {
     }
   }
 
-  private analyzeCompetitorSegments(analysisData: AnalysisData) {
+  private analyzeCompetitorSegments(analysisData: AnalysisData): CompetitorSegment[] {
     const competitors = analysisData.competitorAnalysis.filter(c => !c.isDeleted)
     
     // Simple price-based segmentation
@@ -304,13 +304,13 @@ class SessionTracker {
 
     if (prices.length === 0) return []
 
-    const segments = [
+    const segments: CompetitorSegment[] = [
       {
         name: 'Budget',
         priceRange: { min: prices[0], max: prices[Math.floor(prices.length * 0.33)] },
         marketShare: 0.4,
         characteristics: ['Prezzo basso', 'Volumi alti'],
-        keyPlayers: [],
+        keyPlayers: [] as string[],
         strengths: ['Accessibilità', 'Market penetration'],
         weaknesses: ['Qualità percepita', 'Margin bassi']
       },
@@ -322,7 +322,7 @@ class SessionTracker {
         },
         marketShare: 0.4,
         characteristics: ['Bilanciamento prezzo-qualità'],
-        keyPlayers: [],
+        keyPlayers: [] as string[],
         strengths: ['Versatilità', 'Ampia appeal'],
         weaknesses: ['Differenziazione limitata']
       },
@@ -334,7 +334,7 @@ class SessionTracker {
         },
         marketShare: 0.2,
         characteristics: ['Alta qualità', 'Brand premium'],
-        keyPlayers: [],
+        keyPlayers: [] as string[],
         strengths: ['Margin alti', 'Brand loyalty'],
         weaknesses: ['Mercato limitato', 'Price sensitivity']
       }

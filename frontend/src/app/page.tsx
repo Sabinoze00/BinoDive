@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { MainLayout } from '@/components/layout/MainLayout'
 import { FileUploader } from '@/components/upload/FileUploader'
 import { MarketSummaryCard } from '@/components/dashboard/MarketSummary'
@@ -231,7 +231,7 @@ function DashboardContent() {
                         Genera Audit Professionale con AI
                       </h3>
                       <p className="text-sm text-purple-700">
-                        Ottieni un'analisi dettagliata e raccomandazioni strategiche basate sui tuoi dati
+                        Ottieni un&apos;analisi dettagliata e raccomandazioni strategiche basate sui tuoi dati
                       </p>
                     </div>
                   </div>
@@ -392,7 +392,7 @@ function DashboardContent() {
                 Benvenuto in BinoDive
               </h3>
               <p className="text-gray-600">
-                Per iniziare l'analisi dei competitor Amazon, carica i tre file CSV richiesti:
+                Per iniziare l&apos;analisi dei competitor Amazon, carica i tre file CSV richiesti:
               </p>
               <ul className="text-sm text-gray-500 space-y-1">
                 <li>• File di analisi keyword (keyword_analysis...DATA.csv)</li>
@@ -404,11 +404,13 @@ function DashboardContent() {
         )}
 
         {/* Audit Generator Modal */}
-        <AuditGeneratorComponent
-          analysisData={data}
-          isVisible={showAuditGenerator}
-          onClose={() => setShowAuditGenerator(false)}
-        />
+        {data && (
+          <AuditGeneratorComponent
+            analysisData={data}
+            isVisible={showAuditGenerator}
+            onClose={() => setShowAuditGenerator(false)}
+          />
+        )}
       </div>
     </MainLayout>
   )

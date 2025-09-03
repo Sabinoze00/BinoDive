@@ -103,7 +103,7 @@ export const MarketAnalysis: React.FC<MarketAnalysisProps> = ({ data }) => {
     ).length
     
     // MFN = Merchant Fulfilled (equivalent to FBM)
-    const fbmCount = mfnCount
+    // const fbmCount = mfnCount // Unused variable
     const totalSales = activeCompetitors.reduce((sum, c) => sum + c.sales, 0)
     const totalRevenue = activeCompetitors.reduce((sum, c) => {
       return sum + parseEuropeanNumber(c.revenue)
@@ -322,8 +322,8 @@ export const MarketAnalysis: React.FC<MarketAnalysisProps> = ({ data }) => {
       priceParsed: parseEuropeanNumber(comp.price || ''),
       revenueRaw: comp.revenue,
       sales: comp.sales,
-      // Try to extract price from business data if available
-      hasBusinessPrice: comp.businessData?.price || 'N/A'
+      // For debugging: show original price field
+      originalPrice: comp.price || 'N/A'
     })))
     
     // For now, use AOV as price proxy since price data is empty
@@ -611,7 +611,7 @@ export const MarketAnalysis: React.FC<MarketAnalysisProps> = ({ data }) => {
             </div>
           ) : (
             <div className="space-y-2">
-              {priceClusterAnalysis.map((cluster, index) => (
+              {priceClusterAnalysis.map((cluster) => (
                 <div key={cluster.label} className="border rounded-lg p-3">
                   <div className="flex items-center justify-between mb-2">
                     <div>

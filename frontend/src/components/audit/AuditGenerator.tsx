@@ -8,10 +8,10 @@ import { Badge } from '@/components/ui/badge'
 import { ProductInput } from './ProductInput'
 import { UserAnalysisInput } from './UserAnalysisInput'
 import { AuditReportViewer } from './AuditReportViewer'
-import { FileText, Loader2, Brain, CheckCircle, AlertCircle, Download, Eye } from 'lucide-react'
+import { FileText, Loader2, Brain, CheckCircle, AlertCircle, Eye } from 'lucide-react'
 import { auditGenerator } from '@/lib/auditGenerator'
 import { sessionTracker } from '@/lib/sessionTracker'
-import type { UserProduct, UserAnalysis, AuditReport } from '../../../../../shared/types/audit'
+import type { UserProduct, UserAnalysis, AuditReport } from '@/types/audit'
 import type { AnalysisData } from '@/types/analysis'
 
 interface AuditGeneratorProps {
@@ -165,13 +165,13 @@ export const AuditGeneratorComponent: React.FC<AuditGeneratorProps> = ({
                     <FileText className="w-5 h-5 text-blue-600 mt-0.5" />
                     <div>
                       <h4 className="font-semibold text-blue-900 mb-2">
-                        Come Funziona l'Audit AI
+                        Come Funziona l&apos;Audit AI
                       </h4>
                       <ul className="text-sm text-blue-800 space-y-1">
-                        <li>• <strong>Prodotto (opzionale):</strong> Aggiungi il tuo prodotto per un'analisi personalizzata</li>
+                        <li>• <strong>Prodotto (opzionale):</strong> Aggiungi il tuo prodotto per un&apos;analisi personalizzata</li>
                         <li>• <strong>Analisi Personali (opzionale):</strong> Condividi i tuoi insights per un audit più preciso</li>
-                        <li>• <strong>Tracking Automatico:</strong> L'AI analizza anche il tuo comportamento nella sessione</li>
-                        <li>• <strong>Export PDF:</strong> Salva l'audit generato in formato professionale</li>
+                        <li>• <strong>Tracking Automatico:</strong> L&apos;AI analizza anche il tuo comportamento nella sessione</li>
+                        <li>• <strong>Export PDF:</strong> Salva l&apos;audit generato in formato professionale</li>
                       </ul>
                     </div>
                   </div>
@@ -255,7 +255,7 @@ export const AuditGeneratorComponent: React.FC<AuditGeneratorProps> = ({
               </div>
               <h3 className="text-xl font-semibold">Generazione Audit in Corso...</h3>
               <p className="text-gray-600 text-center max-w-md">
-                L'AI sta analizzando i tuoi dati e generando un audit dettagliato. 
+                L&apos;AI sta analizzando i tuoi dati e generando un audit dettagliato. 
                 Questo processo può richiedere alcuni secondi.
               </p>
               <div className="mt-8 space-y-2 text-sm text-gray-500">

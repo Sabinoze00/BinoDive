@@ -158,11 +158,9 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({
                     <p className="text-xs text-gray-600">
                       <strong>Brand:</strong> {product.brand}
                     </p>
-                    {product.description && (
-                      <p className="text-xs text-gray-600">
-                        {truncateText(product.description, 80)}
-                      </p>
-                    )}
+                    <p className="text-xs text-gray-600">
+                      ASIN: {product.asin}
+                    </p>
                   </div>
 
                   {/* Metrics */}

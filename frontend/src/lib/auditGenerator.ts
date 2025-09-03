@@ -1,4 +1,4 @@
-import type { AuditDataInput, AuditReport, DeepSeekAuditRequest, AuditGenerationConfig } from '../../../../shared/types/audit'
+import type { AuditDataInput, AuditReport, DeepSeekAuditRequest, AuditGenerationConfig } from '@/types/audit'
 
 class AuditGenerator {
   private config: AuditGenerationConfig = {

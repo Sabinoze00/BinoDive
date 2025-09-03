@@ -80,10 +80,10 @@ export const CalculationInfo: React.FC = () => {
           <div className="space-y-3">
             <h4 className="font-semibold text-lg">🏪 Brand Keywords</h4>
             <p className="text-sm text-gray-600">
-              Una keyword è considerata "brand" se:
+              Una keyword è considerata &quot;brand&quot; se:
             </p>
             <ul className="text-xs text-gray-500 list-disc list-inside ml-2">
-              <li>Is_Brand = "true" o "1" nel CSV, oppure</li>
+              <li>Is_Brand = &quot;true&quot; o &quot;1&quot; nel CSV, oppure</li>
               <li>Ha un valore nella colonna Brand_Word</li>
             </ul>
           </div>

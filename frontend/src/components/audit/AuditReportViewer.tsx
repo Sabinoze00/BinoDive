@@ -4,7 +4,6 @@ import React, { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
 import { 
   ArrowLeft, 
   Download, 
@@ -18,7 +17,7 @@ import {
   CheckCircle,
   AlertTriangle
 } from 'lucide-react'
-import type { AuditReport } from '../../../../../shared/types/audit'
+import type { AuditReport } from '@/types/audit'
 
 interface AuditReportViewerProps {
   report: AuditReport

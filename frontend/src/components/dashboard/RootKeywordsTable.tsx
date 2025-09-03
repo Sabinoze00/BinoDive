@@ -30,7 +30,7 @@ export const RootKeywordsTable: React.FC<RootKeywordsTableProps> = ({
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
 
   const filteredRootKeywords = useMemo(() => {
-    let filtered = rootKeywords.filter(rk => {
+    const filtered = rootKeywords.filter(rk => {
       if (!showDeleted && rk.isDeleted) return false
       if (searchTerm) {
         const searchLower = searchTerm.toLowerCase()

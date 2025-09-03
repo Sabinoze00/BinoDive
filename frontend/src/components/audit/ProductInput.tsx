@@ -4,10 +4,9 @@ import React, { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Plus, X, Package } from 'lucide-react'
-import type { UserProduct } from '../../../../../shared/types/audit'
+import type { UserProduct } from '@/types/audit'
 
 interface ProductInputProps {
   onProductSave: (product: UserProduct) => void

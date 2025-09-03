@@ -149,7 +149,7 @@ export const KeywordFilters: React.FC<KeywordFiltersProps> = ({
           </Badge>
           {searchTerm && (
             <Badge variant="secondary">
-              Filtro: "{searchTerm}"
+              Filtro: &quot;{searchTerm}&quot;
             </Badge>
           )}
           {showBrandOnly && (

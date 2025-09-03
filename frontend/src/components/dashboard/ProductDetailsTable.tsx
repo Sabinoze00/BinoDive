@@ -31,7 +31,7 @@ export const ProductDetailsTable: React.FC<ProductDetailsTableProps> = ({
   }, [products])
 
   // Helper function to highlight keywords in text
-  const highlightKeywords = (text: string, productAsin: string, keywords: ProcessedKeyword[]): JSX.Element => {
+  const highlightKeywords = (text: string, productAsin: string, keywords: ProcessedKeyword[]): React.ReactElement => {
     if (!text) return <span>{text}</span>
     
     const relevantKeywords = keywords.filter(kw => 
@@ -193,7 +193,8 @@ export const ProductDetailsTable: React.FC<ProductDetailsTableProps> = ({
             <div className="space-y-4">
               {activeProducts.map((product) => {
                 const isExpanded = expandedProducts.has(product.asin)
-                const bulletPoints = extractBulletPoints(product.description)
+                // Note: description field not available in current data structure
+                const bulletPoints: string[] = []
                 
                 return (
                   <div
@@ -270,15 +271,13 @@ export const ProductDetailsTable: React.FC<ProductDetailsTableProps> = ({
                       {/* Expanded Content */}
                       {isExpanded && (
                         <div className="border-t pt-4 space-y-4">
-                          {/* Description with highlighted keywords */}
-                          {product.description && (
-                            <div>
-                              <h4 className="font-medium mb-2">Descrizione:</h4>
-                              <div className="text-sm text-gray-700 bg-gray-50 p-3 rounded">
-                                {highlightKeywords(product.description, product.asin, keywords)}
-                              </div>
+                          {/* Product description not available in current data structure */}
+                          <div>
+                            <h4 className="font-medium mb-2">Informazioni Prodotto:</h4>
+                            <div className="text-sm text-gray-500 bg-gray-50 p-3 rounded">
+                              Descrizione non disponibile nei dati attuali
                             </div>
-                          )}
+                          </div>
 
                           {/* Bullet Points */}
                           {bulletPoints.length > 0 && (

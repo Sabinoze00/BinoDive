@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Plus, X, FileText, Edit, Trash2 } from 'lucide-react'
-import type { UserAnalysis } from '../../../../../shared/types/audit'
+import type { UserAnalysis } from '@/types/audit'
 
 interface UserAnalysisInputProps {
   analyses: UserAnalysis[]
@@ -158,7 +158,7 @@ export const UserAnalysisInput: React.FC<UserAnalysisInputProps> = ({
                     </label>
                     <Select
                       value={newAnalysis.category}
-                      onValueChange={(value: any) => setNewAnalysis(prev => ({ ...prev, category: value }))}
+                      onValueChange={(value: UserAnalysis['category']) => setNewAnalysis(prev => ({ ...prev, category: value }))}
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -179,7 +179,7 @@ export const UserAnalysisInput: React.FC<UserAnalysisInputProps> = ({
                     </label>
                     <Select
                       value={newAnalysis.priority}
-                      onValueChange={(value: any) => setNewAnalysis(prev => ({ ...prev, priority: value }))}
+                      onValueChange={(value: UserAnalysis['priority']) => setNewAnalysis(prev => ({ ...prev, priority: value }))}
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -252,7 +252,7 @@ export const UserAnalysisInput: React.FC<UserAnalysisInputProps> = ({
         <div className="space-y-3">
           {analyses.length === 0 ? (
             <p className="text-gray-500 text-center py-8">
-              Nessuna analisi personale aggiunta. Le tue analisi aiuteranno l'AI a generare un audit più personalizzato.
+              Nessuna analisi personale aggiunta. Le tue analisi aiuteranno l&apos;AI a generare un audit più personalizzato.
             </p>
           ) : (
             analyses.map(analysis => (

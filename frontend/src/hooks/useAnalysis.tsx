@@ -123,6 +123,20 @@ const AnalysisContext = createContext<AnalysisContextType | undefined>(undefined
 export function AnalysisProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(analysisReducer, initialState)
 
+  const loadAnalysis = useCallback(async (analysisId: string) => {
+    dispatch({ type: 'LOAD_START' })
+    
+    try {
+      const data = await apiClient.getAnalysis(analysisId)
+      dispatch({ type: 'LOAD_SUCCESS', payload: data })
+    } catch (error) {
+      dispatch({ 
+        type: 'LOAD_ERROR', 
+        payload: error instanceof Error ? error.message : 'Failed to load analysis' 
+      })
+    }
+  }, [])
+
   // Auto-load analysis on mount if analysisId exists
   useEffect(() => {
     if (state.analysisId && !state.data && !state.isLoading) {
@@ -134,7 +148,7 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
         dispatch({ type: 'RESET' })
       })
     }
-  }, [state.analysisId, state.data, state.isLoading])
+  }, [state.analysisId, state.data, state.isLoading, loadAnalysis])
 
   const uploadFiles = useCallback(async (files: { 
     keywordAnalysis: File
@@ -163,21 +177,7 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
         payload: error instanceof Error ? error.message : 'Upload failed' 
       })
     }
-  }, [state.uploadProgress])
-
-  const loadAnalysis = useCallback(async (analysisId: string) => {
-    dispatch({ type: 'LOAD_START' })
-    
-    try {
-      const data = await apiClient.getAnalysis(analysisId)
-      dispatch({ type: 'LOAD_SUCCESS', payload: data })
-    } catch (error) {
-      dispatch({ 
-        type: 'LOAD_ERROR', 
-        payload: error instanceof Error ? error.message : 'Failed to load analysis' 
-      })
-    }
-  }, [])
+  }, [state.uploadProgress, loadAnalysis])
 
   const updateKeywords = useCallback(async (deleted: string[], restored: string[]) => {
     if (!state.analysisId) {

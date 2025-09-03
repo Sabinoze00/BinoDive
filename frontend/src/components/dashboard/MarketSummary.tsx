@@ -75,7 +75,7 @@ export const MarketSummaryCard: React.FC<MarketSummaryProps> = ({ data }) => {
           <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
             <p className="text-sm text-yellow-800">
               <strong>Nota:</strong> Il SV Totale Mercato è calcolato solo sulle keyword attive (non eliminate). 
-              Sono state eliminate {data.deletedKeywords} keyword dall'analisi.
+              Sono state eliminate {data.deletedKeywords} keyword dall&apos;analisi.
             </p>
           </div>
         )}
