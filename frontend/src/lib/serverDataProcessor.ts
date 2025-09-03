@@ -436,6 +436,7 @@ export class ServerDataProcessor {
     })
 
     // Calculate competitor strengths (relevance = % of keywords with ranking <=30)
+    console.log('💪 Starting COMPETITOR strength calculation...')
     competitors.forEach(comp => {
       const relevantKeywords = processedKeywords.filter(kw => 
         kw.rankings[comp.asin] && kw.rankings[comp.asin] <= 30

@@ -45,6 +45,9 @@ function DashboardContent() {
       localStorage.removeItem('binodive_analysisId')
       localStorage.removeItem('binodive_session_events')
       localStorage.removeItem('binodive_session_id')
+      
+      // Also clear analysis cache to force reprocessing
+      sessionStorage.clear()
       localStorage.removeItem('binodive_audit_reports')
       sessionStorage.removeItem('binodive_session_active')
       
