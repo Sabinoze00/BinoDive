@@ -412,14 +412,14 @@ export const MarketAnalysis: React.FC<MarketAnalysisProps> = ({ data }) => {
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <span>Sales</span>
-                  <span className="font-medium">{fulfillmentAnalysis.fba.sales.toLocaleString()} ({fulfillmentAnalysis.fba.salesPercent.toFixed(1)}%)</span>
+                  <span className="font-medium">{(fulfillmentAnalysis.fba.sales || 0).toLocaleString()} ({fulfillmentAnalysis.fba.salesPercent.toFixed(1)}%)</span>
                 </div>
                 <Progress value={fulfillmentAnalysis.fba.salesPercent} className="h-2" />
               </div>
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <span>Revenue</span>
-                  <span className="font-medium">€{fulfillmentAnalysis.fba.revenue.toLocaleString()} ({fulfillmentAnalysis.fba.revenuePercent.toFixed(1)}%)</span>
+                  <span className="font-medium">€{(fulfillmentAnalysis.fba.revenue || 0).toLocaleString()} ({fulfillmentAnalysis.fba.revenuePercent.toFixed(1)}%)</span>
                 </div>
                 <Progress value={fulfillmentAnalysis.fba.revenuePercent} className="h-2" />
               </div>
@@ -433,14 +433,14 @@ export const MarketAnalysis: React.FC<MarketAnalysisProps> = ({ data }) => {
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <span>Sales</span>
-                  <span className="font-medium">{fulfillmentAnalysis.fbm.sales.toLocaleString()} ({fulfillmentAnalysis.fbm.salesPercent.toFixed(1)}%)</span>
+                  <span className="font-medium">{(fulfillmentAnalysis.fbm.sales || 0).toLocaleString()} ({fulfillmentAnalysis.fbm.salesPercent.toFixed(1)}%)</span>
                 </div>
                 <Progress value={fulfillmentAnalysis.fbm.salesPercent} className="h-2" />
               </div>
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <span>Revenue</span>
-                  <span className="font-medium">€{fulfillmentAnalysis.fbm.revenue.toLocaleString()} ({fulfillmentAnalysis.fbm.revenuePercent.toFixed(1)}%)</span>
+                  <span className="font-medium">€{(fulfillmentAnalysis.fbm.revenue || 0).toLocaleString()} ({fulfillmentAnalysis.fbm.revenuePercent.toFixed(1)}%)</span>
                 </div>
                 <Progress value={fulfillmentAnalysis.fbm.revenuePercent} className="h-2" />
               </div>
@@ -503,11 +503,11 @@ export const MarketAnalysis: React.FC<MarketAnalysisProps> = ({ data }) => {
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="font-medium">{brand.sales.toLocaleString()}</div>
+                  <div className="font-medium">{(brand.sales || 0).toLocaleString()}</div>
                   <div className="text-gray-500">({brand.salesPercent.toFixed(1)}%)</div>
                 </div>
                 <div className="text-center">
-                  <div className="font-medium">€{brand.revenue.toLocaleString()}</div>
+                  <div className="font-medium">€{(brand.revenue || 0).toLocaleString()}</div>
                   <div className="text-gray-500">({brand.revenuePercent.toFixed(1)}%)</div>
                 </div>
                 <div className="text-center font-medium">
@@ -576,11 +576,11 @@ export const MarketAnalysis: React.FC<MarketAnalysisProps> = ({ data }) => {
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="font-medium">{country.sales.toLocaleString()}</div>
+                  <div className="font-medium">{(country.sales || 0).toLocaleString()}</div>
                   <div className="text-gray-500">({country.salesPercent.toFixed(1)}%)</div>
                 </div>
                 <div className="text-center">
-                  <div className="font-medium">€{country.revenue.toLocaleString()}</div>
+                  <div className="font-medium">€{(country.revenue || 0).toLocaleString()}</div>
                   <div className="text-gray-500">({country.revenuePercent.toFixed(1)}%)</div>
                 </div>
                 <div className="text-center font-medium">
@@ -623,11 +623,11 @@ export const MarketAnalysis: React.FC<MarketAnalysisProps> = ({ data }) => {
                   
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
                     <div>
-                      <div className="font-medium">{cluster.totalSales.toLocaleString()}</div>
+                      <div className="font-medium">{(cluster.totalSales || 0).toLocaleString()}</div>
                       <div className="text-gray-500">Sales ({cluster.salesPercentage.toFixed(1)}%)</div>
                     </div>
                     <div>
-                      <div className="font-medium">€{cluster.totalRevenue.toLocaleString()}</div>
+                      <div className="font-medium">€{(cluster.totalRevenue || 0).toLocaleString()}</div>
                       <div className="text-gray-500">Revenue ({cluster.revenuePercentage.toFixed(1)}%)</div>
                     </div>
                     <div>

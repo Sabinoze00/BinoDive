@@ -63,7 +63,7 @@ export const ProductDetailsTable: React.FC<ProductDetailsTableProps> = ({
           <div className="mt-2 flex flex-wrap gap-1">
             {keywordMatches.map((match, idx) => (
               <Badge key={idx} variant="secondary" className="text-xs">
-                {match.keyword} #{match.ranking} ({match.searchVolume.toLocaleString()} SV)
+                {match.keyword} #{match.ranking} ({(match.searchVolume || 0).toLocaleString()} SV)
               </Badge>
             ))}
           </div>
@@ -326,7 +326,7 @@ export const ProductDetailsTable: React.FC<ProductDetailsTableProps> = ({
                                             #{kw.rankings[product.asin]}
                                           </Badge>
                                         </td>
-                                        <td className="px-3 py-2">{kw.searchVolume.toLocaleString()}</td>
+                                        <td className="px-3 py-2">{(kw.searchVolume || 0).toLocaleString()}</td>
                                         <td className="px-3 py-2">{kw.relevance}%</td>
                                       </tr>
                                     ))}

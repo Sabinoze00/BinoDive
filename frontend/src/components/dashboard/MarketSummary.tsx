@@ -24,7 +24,7 @@ export const MarketSummaryCard: React.FC<MarketSummaryProps> = ({ data }) => {
             <Target className="w-4 h-4 text-gray-600 mx-auto mb-1" />
             <p className="text-xs font-medium text-gray-600 mb-1">SV TOTALE MERCATO</p>
             <p className="text-lg font-bold text-gray-800">
-              {data.totalMarketSV.toLocaleString()}
+              {(data.totalMarketSV || 0).toLocaleString()}
             </p>
           </div>
           

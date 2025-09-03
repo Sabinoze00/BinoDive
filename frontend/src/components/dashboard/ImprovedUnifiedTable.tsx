@@ -534,13 +534,13 @@ export const ImprovedUnifiedTable: React.FC<ImprovedUnifiedTableProps> = ({
                   <TableCell></TableCell>
                   <TableCell className="font-bold bg-blue-50 text-blue-700">
                     {activeCompetitors.length > 0 
-                      ? activeCompetitors.reduce((sum, c) => sum + c.sales, 0).toLocaleString()
+                      ? (activeCompetitors.reduce((sum, c) => sum + c.sales, 0) || 0).toLocaleString()
                       : '0'
                     }
                   </TableCell>
                   {activeCompetitors.map((comp) => (
                     <TableCell key={comp.asin} className="text-center font-semibold hover:bg-blue-50">
-                      {comp.sales.toLocaleString()}
+                      {(comp.sales || 0).toLocaleString()}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -561,7 +561,7 @@ export const ImprovedUnifiedTable: React.FC<ImprovedUnifiedTableProps> = ({
                     />
                   </TableCell>
                   <TableCell className="font-bold bg-blue-50 text-blue-700">
-                    €{data.marketSummary.totalRevenue.toLocaleString()}
+                    €{(data.marketSummary.totalRevenue || 0).toLocaleString()}
                   </TableCell>
                   {activeCompetitors.map((comp) => (
                     <TableCell key={comp.asin} className="text-center font-semibold hover:bg-blue-50">
@@ -595,7 +595,7 @@ export const ImprovedUnifiedTable: React.FC<ImprovedUnifiedTableProps> = ({
                         className={`text-center font-semibold hover:bg-blue-50 ${
                           isAnomalous ? 'bg-red-50 text-red-700' : ''
                         }`}
-                        title={isAnomalous ? `AOV anomalo: ${aov.toFixed(2)}€ (Sales: ${comp.sales}, Revenue: €${revenue.toLocaleString()})` : ''}
+                        title={isAnomalous ? `AOV anomalo: ${aov.toFixed(2)}€ (Sales: ${comp.sales}, Revenue: €${(revenue || 0).toLocaleString()})` : ''}
                       >
                         €{aov.toFixed(2)}
                         {isAnomalous && <span className="ml-1 text-red-500">⚠</span>}
@@ -737,7 +737,7 @@ export const ImprovedUnifiedTable: React.FC<ImprovedUnifiedTableProps> = ({
                       </div>
                     </TableCell>
                     <TableCell className="text-center hover:bg-blue-100">
-                      {keyword.searchVolume.toLocaleString()}
+                      {(keyword.searchVolume || 0).toLocaleString()}
                     </TableCell>
                     <TableCell className="text-center">
                       {keyword.isBrand ? 

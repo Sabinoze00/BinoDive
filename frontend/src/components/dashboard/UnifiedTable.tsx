@@ -368,12 +368,12 @@ export const UnifiedTable: React.FC<UnifiedTableProps> = ({
                 <TableCell></TableCell>
                 <TableCell className="font-bold bg-blue-50 text-blue-700">
                   {data.competitorAnalysis.length > 0 
-                    ? data.competitorAnalysis.reduce((sum, c) => sum + c.sales, 0).toLocaleString()
+                    ? data.competitorAnalysis.reduce((sum, c) => sum + (c.sales || 0), 0).toLocaleString()
                     : '0'
                   }
                 </TableCell>
                 {data.competitorAnalysis.map((comp) => (
-                  <TableCell key={comp.asin} className="text-center font-semibold">{comp.sales.toLocaleString()}</TableCell>
+                  <TableCell key={comp.asin} className="text-center font-semibold">{(comp.sales || 0).toLocaleString()}</TableCell>
                 ))}
               </TableRow>
 
@@ -452,7 +452,7 @@ export const UnifiedTable: React.FC<UnifiedTableProps> = ({
                     </div>
                   </TableCell>
                   <TableCell className="text-center">
-                    {keyword.searchVolume.toLocaleString()}
+                    {(keyword.searchVolume || 0).toLocaleString()}
                   </TableCell>
                   <TableCell className="text-center">
                     {keyword.isBrand ? 

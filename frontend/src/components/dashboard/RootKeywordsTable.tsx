@@ -275,7 +275,7 @@ export const RootKeywordsTable: React.FC<RootKeywordsTableProps> = ({
                       </span>
                     </TableCell>
                     <TableCell className="text-center hover:bg-blue-100">
-                      {rootKeyword.totalSV.toLocaleString()}
+                      {(rootKeyword.totalSV || 0).toLocaleString()}
                     </TableCell>
                     <TableCell className="text-center">
                       {rootKeyword.averageRelevance}%
