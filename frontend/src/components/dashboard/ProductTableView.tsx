@@ -213,8 +213,28 @@ export const ProductTableView: React.FC<ProductTableViewProps> = ({
 
                         {/* ASIN */}
                         <td className="px-3 py-3">
-                          <div className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
-                            {product.asin}
+                          <div className="space-y-2">
+                            <div className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
+                              {product.asin}
+                            </div>
+                            <div className="flex gap-1">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-6 px-2 text-xs"
+                                onClick={() => window.open(`https://keepa.com/#!product/8-${product.asin}`, '_blank')}
+                              >
+                                Keepa
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-6 px-2 text-xs"
+                                onClick={() => window.open(`https://www.amazon.it/dp/${product.asin}`, '_blank')}
+                              >
+                                Amazon
+                              </Button>
+                            </div>
                           </div>
                         </td>
 

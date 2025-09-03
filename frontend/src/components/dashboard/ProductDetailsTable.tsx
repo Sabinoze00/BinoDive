@@ -245,7 +245,25 @@ export const ProductDetailsTable: React.FC<ProductDetailsTableProps> = ({
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                             <div>
                               <span className="font-medium">ASIN:</span>
-                              <p className="text-gray-600">{product.asin}</p>
+                              <p className="text-gray-600 mb-2">{product.asin}</p>
+                              <div className="flex gap-1">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-6 px-2 text-xs"
+                                  onClick={() => window.open(`https://keepa.com/#!product/8-${product.asin}`, '_blank')}
+                                >
+                                  Keepa
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-6 px-2 text-xs"
+                                  onClick={() => window.open(`https://www.amazon.it/dp/${product.asin}`, '_blank')}
+                                >
+                                  Amazon
+                                </Button>
+                              </div>
                             </div>
                             <div>
                               <span className="font-medium">Brand:</span>

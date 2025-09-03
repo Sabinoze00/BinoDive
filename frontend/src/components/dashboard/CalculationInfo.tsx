@@ -35,12 +35,12 @@ export const CalculationInfo: React.FC = () => {
           </div>
 
           <div className="space-y-3">
-            <h4 className="font-semibold text-lg">💪 % Forza Competitor</h4>
+            <h4 className="font-semibold text-lg">💪 % Rilevanza Competitor</h4>
             <p className="text-sm text-gray-600">
-              Per ogni competitor, calcola la percentuale di mercato basata sui ranking in Top 30.
+              Per ogni competitor, calcola la percentuale di keyword dove il prodotto è posizionato Top 30.
             </p>
             <code className="block bg-gray-100 p-2 text-xs rounded">
-              % Forza = (SV keyword Top 30) / (SV Totale Mercato) × 100
+              % Rilevanza = (Numero keyword Top 30) / (Totale keyword attive) × 100
             </code>
           </div>
 

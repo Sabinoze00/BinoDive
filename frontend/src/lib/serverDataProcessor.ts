@@ -29,6 +29,7 @@ interface BusinessRow {
 interface ProductRow {
   asin: string
   brand: string
+  title?: string
   imageUrl?: string
   asinVariation?: string
 }
@@ -184,7 +185,7 @@ export class ServerDataProcessor {
         ratings: ratingsIndex >= 0 ? parseFloat(values[ratingsIndex]) || undefined : undefined,
         creationDate: creationDateIndex >= 0 && values[creationDateIndex] ? new Date(values[creationDateIndex]) : undefined,
         price: priceIndex >= 0 ? values[priceIndex] || undefined : undefined,
-        sales: salesIndex >= 0 ? parseInt(values[salesIndex]) || undefined : undefined,
+        sales: salesIndex >= 0 ? this.parseEuropeanNumber(values[salesIndex] || '') || undefined : undefined,
         revenue: revenueIndex >= 0 ? values[revenueIndex] || undefined : undefined,
         category: categoryIndex >= 0 ? values[categoryIndex] || undefined : undefined,
         fulfillment: fulfillmentIndex >= 0 ? values[fulfillmentIndex] || undefined : undefined
@@ -221,19 +222,21 @@ export class ServerDataProcessor {
       // From logs: ASIN is at index 0, but brand should be taken from index 17 (Marca)
       const asinIndex = headers.findIndex(h => h.toLowerCase().includes('asin'))
       const brandIndex = headers.findIndex(h => h.toLowerCase().includes('marca'))
+      const titleIndex = headers.findIndex(h => h.toLowerCase().includes('titolo') || h.toLowerCase().includes('title') || h.toLowerCase().includes('nome'))
       const imageUrlIndex = headers.findIndex(h => h.toLowerCase().includes('immagine'))
       const asinVariationIndex = headers.findIndex(h => h.toLowerCase().includes('asin di variazione'))
 
       const row: ProductRow = {
         asin: asinIndex >= 0 ? values[asinIndex] || '' : values[0] || '',
         brand: brandIndex >= 0 ? values[brandIndex] || '' : 'Unknown',
+        title: titleIndex >= 0 ? values[titleIndex] || undefined : undefined,
         imageUrl: imageUrlIndex >= 0 ? values[imageUrlIndex] || undefined : undefined,
         asinVariation: asinVariationIndex >= 0 ? values[asinVariationIndex] || undefined : undefined
       }
 
       // Debug: Log first few product rows
       if (i <= 3) {
-        console.log(`Product Row ${i}:`, { asin: row.asin, brand: row.brand, imageUrl: row.imageUrl?.substring(0, 50) })
+        console.log(`Product Row ${i}:`, { asin: row.asin, brand: row.brand, title: row.title?.substring(0, 50), imageUrl: row.imageUrl?.substring(0, 50) })
       }
 
       data.push(row)
@@ -263,6 +266,103 @@ export class ServerDataProcessor {
     
     values.push(current.trim())
     return values
+  }
+
+  // Helper function for European number parsing
+  private static parseEuropeanNumber(value: string): number {
+    if (!value || typeof value !== 'string') return 0
+    
+    const cleaned = value.trim()
+    
+    if (cleaned.includes(',')) {
+      // Format: "24.779,36" -> "24779.36"
+      const parts = cleaned.split(',')
+      const integerPart = parts[0].replace(/\./g, '')
+      const decimalPart = parts[1] || ''
+      return parseFloat(integerPart + '.' + decimalPart) || 0
+    } else {
+      // Format: "1.487" (could be 1487 or 1.487)
+      const parts = cleaned.split('.')
+      if (parts.length === 2 && parts[1].length > 2) {
+        // This is likely "1.487" = 1487
+        return parseInt(cleaned.replace(/\./g, '')) || 0
+      } else if (parts.length > 2) {
+        // Multiple dots: "1.234.567" = 1234567
+        return parseInt(cleaned.replace(/\./g, '')) || 0
+      } else {
+        // Simple number or decimal: "1.5" = 1.5
+        return parseFloat(cleaned) || 0
+      }
+    }
+  }
+
+  // Generate root keywords by extracting common root words from keyword phrases
+  private static generateRootKeywords(keywords: any[]): any[] {
+    const rootWordMap = new Map<string, {
+      keywords: any[]
+      totalSV: number
+      brandCount: number
+      nonBrandCount: number
+    }>()
+
+    // Common Italian stop words to exclude
+    const stopWords = new Set(['di', 'da', 'in', 'con', 'su', 'per', 'tra', 'fra', 'a', 'e', 'il', 'lo', 'la', 'i', 'gli', 'le', 'un', 'uno', 'una', 'del', 'dello', 'della', 'dei', 'degli', 'delle'])
+
+    keywords.forEach(keyword => {
+      if (keyword.isDeleted) return
+
+      const words = keyword.keywordPhrase.toLowerCase()
+        .split(/[\s\-_]+/)
+        .filter(word => word.length > 2 && !stopWords.has(word))
+
+      // For each word, consider it as a potential root
+      words.forEach(word => {
+        if (!rootWordMap.has(word)) {
+          rootWordMap.set(word, {
+            keywords: [],
+            totalSV: 0,
+            brandCount: 0,
+            nonBrandCount: 0
+          })
+        }
+
+        const rootData = rootWordMap.get(word)!
+        rootData.keywords.push(keyword)
+        rootData.totalSV += keyword.searchVolume
+        if (keyword.isBrand) {
+          rootData.brandCount++
+        } else {
+          rootData.nonBrandCount++
+        }
+      })
+    })
+
+    // Convert to root keywords format and filter out roots with less than 2 keywords
+    const rootKeywords = Array.from(rootWordMap.entries())
+      .filter(([_, data]) => data.keywords.length >= 2)
+      .map(([rootWord, data]) => {
+        const totalCount = data.brandCount + data.nonBrandCount
+        const brandPercentage = totalCount > 0 ? Math.round((data.brandCount / totalCount) * 100) : 0
+        const averageRelevance = data.keywords.length > 0 ? 
+          Math.round(data.keywords.reduce((sum, kw) => sum + kw.relevance, 0) / data.keywords.length) : 0
+
+        return {
+          rootWord,
+          totalSV: data.totalSV,
+          totalCount,
+          brandCount: data.brandCount,
+          nonBrandCount: data.nonBrandCount,
+          brandPercentage,
+          averageRelevance,
+          keywords: data.keywords.map(kw => kw.keywordPhrase),
+          isDeleted: false
+        }
+      })
+      .sort((a, b) => b.totalSV - a.totalSV) // Sort by total search volume
+      .slice(0, 50) // Limit to top 50 root keywords
+
+    console.log('Generated root keywords:', rootKeywords.length)
+    return rootKeywords
   }
 
   private static combineData(
@@ -313,16 +413,16 @@ export class ServerDataProcessor {
       }
     })
 
-    // Calculate competitor strengths
+    // Calculate competitor strengths (relevance = % of keywords with ranking <=30)
     competitors.forEach(comp => {
       const relevantKeywords = processedKeywords.filter(kw => 
         kw.rankings[comp.asin] && kw.rankings[comp.asin] <= 30
       )
       
-      const totalSV = relevantKeywords.reduce((sum, kw) => sum + kw.searchVolume, 0)
-      const marketSV = processedKeywords.reduce((sum, kw) => sum + kw.searchVolume, 0)
+      const totalKeywordsCount = relevantKeywords.length
+      const activeKeywordsCount = processedKeywords.filter(kw => !kw.isDeleted).length
       
-      comp.strengthPercentage = marketSV > 0 ? (totalSV / marketSV) * 100 : 0
+      comp.strengthPercentage = activeKeywordsCount > 0 ? (totalKeywordsCount / activeKeywordsCount) * 100 : 0
       
       if (comp.strengthPercentage >= 40) comp.strengthLevel = 'Molto Forte'
       else if (comp.strengthPercentage >= 25) comp.strengthLevel = 'Forte'
@@ -337,7 +437,7 @@ export class ServerDataProcessor {
       imageUrl: prod.imageUrl || '',
       imageUrlSample: prod.imageUrl || '',
       imageCount: 1,
-      title: prod.brand + ' Product', // Default title
+      title: prod.title || (prod.brand + ' Product'), // Use actual title from CSV or fallback
       feature1: '',
       feature2: '',
       feature3: '',
@@ -350,6 +450,9 @@ export class ServerDataProcessor {
       strengthLevel: 'Debole' as const,
       isDeleted: false
     }))
+
+    // Generate root keywords
+    const rootKeywords = this.generateRootKeywords(processedKeywords)
 
     // Calculate market summary
     const totalMarketSV = processedKeywords
@@ -372,7 +475,7 @@ export class ServerDataProcessor {
       competitorAnalysis: competitors,
       keywordList: processedKeywords,
       productList: products,
-      rootKeywords: [], // Empty for now
+      rootKeywords: rootKeywords,
       strengthSummary: {
         moltoForte: competitors.filter(c => c.strengthLevel === 'Molto Forte').length,
         forte: competitors.filter(c => c.strengthLevel === 'Forte').length,
@@ -386,14 +489,16 @@ export class ServerDataProcessor {
     const activeKeywords = data.keywordList.filter(kw => !kw.isDeleted)
     const totalMarketSV = activeKeywords.reduce((sum, kw) => sum + kw.searchVolume, 0)
 
-    // Recalculate competitor strengths
+    // Recalculate competitor strengths (relevance = % of keywords with ranking <=30)
     data.competitorAnalysis.forEach(comp => {
       const relevantKeywords = activeKeywords.filter(kw => 
         kw.rankings[comp.asin] && kw.rankings[comp.asin] <= 30
       )
       
-      const totalSV = relevantKeywords.reduce((sum, kw) => sum + kw.searchVolume, 0)
-      comp.strengthPercentage = totalMarketSV > 0 ? (totalSV / totalMarketSV) * 100 : 0
+      const totalKeywordsCount = relevantKeywords.length
+      const activeKeywordsCount = activeKeywords.length
+      
+      comp.strengthPercentage = activeKeywordsCount > 0 ? (totalKeywordsCount / activeKeywordsCount) * 100 : 0
       
       if (comp.strengthPercentage >= 40) comp.strengthLevel = 'Molto Forte'
       else if (comp.strengthPercentage >= 25) comp.strengthLevel = 'Forte'
