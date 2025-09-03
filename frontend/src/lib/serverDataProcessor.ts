@@ -216,6 +216,9 @@ export class ServerDataProcessor {
     const separator = lines[0].includes(';') ? ';' : ','
     const headers = lines[0].split(separator).map(h => h.trim().replace(/"/g, ''))
     console.log('Product CSV Headers:', headers)
+    console.log('🔍 Headers that contain "Funzione":', headers.filter(h => h.toLowerCase().includes('funzione')))
+    console.log('🔍 Headers that contain "Descrizione":', headers.filter(h => h.toLowerCase().includes('descrizione')))
+    console.log('🔍 Headers that contain "Funzionalità":', headers.filter(h => h.toLowerCase().includes('funzionalità')))
     
     const data: ProductRow[] = []
 
@@ -230,11 +233,19 @@ export class ServerDataProcessor {
       const titleIndex = headers.findIndex(h => h.toLowerCase().includes('titolo') || h.toLowerCase().includes('title') || h.toLowerCase().includes('nome'))
       const imageUrlIndex = headers.findIndex(h => h.toLowerCase().includes('immagine'))
       const asinVariationIndex = headers.findIndex(h => h.toLowerCase().includes('asin di variazione'))
-      const feature1Index = headers.findIndex(h => h.toLowerCase().includes('feature1') || h.toLowerCase().includes('caratteristica1'))
-      const feature2Index = headers.findIndex(h => h.toLowerCase().includes('feature2') || h.toLowerCase().includes('caratteristica2'))
-      const feature3Index = headers.findIndex(h => h.toLowerCase().includes('feature3') || h.toLowerCase().includes('caratteristica3'))
-      const feature4Index = headers.findIndex(h => h.toLowerCase().includes('feature4') || h.toLowerCase().includes('caratteristica4'))
-      const feature5Index = headers.findIndex(h => h.toLowerCase().includes('feature5') || h.toLowerCase().includes('caratteristica5'))
+      // Look for exact Keepa feature column names
+      const feature1Index = headers.findIndex(h => h.includes('Descrizione & Funzionalità: Funzione 1'))
+      const feature2Index = headers.findIndex(h => h.includes('Descrizione & Funzionalità: Funzione 2'))
+      const feature3Index = headers.findIndex(h => h.includes('Descrizione & Funzionalità: Funzione 3'))
+      const feature4Index = headers.findIndex(h => h.includes('Descrizione & Funzionalità: Funzione 4'))
+      const feature5Index = headers.findIndex(h => h.includes('Descrizione & Funzionalità: Funzione 5'))
+
+      console.log('🔍 Looking for Keepa feature columns:')
+      console.log('- Funzione 1 index:', feature1Index, feature1Index >= 0 ? `"${headers[feature1Index]}"` : 'NOT FOUND')
+      console.log('- Funzione 2 index:', feature2Index, feature2Index >= 0 ? `"${headers[feature2Index]}"` : 'NOT FOUND')
+      console.log('- Funzione 3 index:', feature3Index, feature3Index >= 0 ? `"${headers[feature3Index]}"` : 'NOT FOUND')
+      console.log('- Funzione 4 index:', feature4Index, feature4Index >= 0 ? `"${headers[feature4Index]}"` : 'NOT FOUND')
+      console.log('- Funzione 5 index:', feature5Index, feature5Index >= 0 ? `"${headers[feature5Index]}"` : 'NOT FOUND')
 
       const row: ProductRow = {
         asin: asinIndex >= 0 ? values[asinIndex] || '' : values[0] || '',
@@ -251,7 +262,19 @@ export class ServerDataProcessor {
 
       // Debug: Log first few product rows
       if (i <= 3) {
-        console.log(`Product Row ${i}:`, { asin: row.asin, brand: row.brand, title: row.title?.substring(0, 50), imageUrl: row.imageUrl?.substring(0, 50) })
+        console.log(`Product Row ${i}:`, { 
+          asin: row.asin, 
+          brand: row.brand, 
+          title: row.title?.substring(0, 50), 
+          imageUrl: row.imageUrl?.substring(0, 50),
+          features: {
+            feature1: row.feature1?.substring(0, 50),
+            feature2: row.feature2?.substring(0, 50),
+            feature3: row.feature3?.substring(0, 50),
+            feature4: row.feature4?.substring(0, 50),
+            feature5: row.feature5?.substring(0, 50)
+          }
+        })
       }
 
       data.push(row)
