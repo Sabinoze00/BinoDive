@@ -466,6 +466,27 @@ export class ServerDataProcessor {
       isDeleted: false
     }))
 
+    // Calculate product strengths (same logic as competitors)
+    products.forEach(product => {
+      const relevantKeywords = processedKeywords.filter(kw => 
+        kw.rankings[product.asin] && kw.rankings[product.asin] <= 30
+      )
+      
+      const totalKeywordsCount = relevantKeywords.length
+      const activeKeywordsCount = processedKeywords.filter(kw => !kw.isDeleted).length
+      
+      product.strengthPercentage = activeKeywordsCount > 0 ? (totalKeywordsCount / activeKeywordsCount) * 100 : 0
+      
+      if (product.strengthPercentage >= 40) product.strengthLevel = 'Molto Forte'
+      else if (product.strengthPercentage >= 25) product.strengthLevel = 'Forte'
+      else if (product.strengthPercentage >= 10) product.strengthLevel = 'Medio'
+      else product.strengthLevel = 'Debole'
+      
+      // Also update keyword count and matching keywords
+      product.keywordCount = totalKeywordsCount
+      product.matchingKeywords = relevantKeywords.map(kw => kw.keywordPhrase)
+    })
+
     // Generate root keywords
     const rootKeywords = this.generateRootKeywords(processedKeywords)
 
@@ -519,6 +540,27 @@ export class ServerDataProcessor {
       else if (comp.strengthPercentage >= 25) comp.strengthLevel = 'Forte'
       else if (comp.strengthPercentage >= 10) comp.strengthLevel = 'Medio'
       else comp.strengthLevel = 'Debole'
+    })
+
+    // Recalculate product strengths
+    data.productList.forEach(product => {
+      const relevantKeywords = activeKeywords.filter(kw => 
+        kw.rankings[product.asin] && kw.rankings[product.asin] <= 30
+      )
+      
+      const totalKeywordsCount = relevantKeywords.length
+      const activeKeywordsCount = activeKeywords.length
+      
+      product.strengthPercentage = activeKeywordsCount > 0 ? (totalKeywordsCount / activeKeywordsCount) * 100 : 0
+      
+      if (product.strengthPercentage >= 40) product.strengthLevel = 'Molto Forte'
+      else if (product.strengthPercentage >= 25) product.strengthLevel = 'Forte'
+      else if (product.strengthPercentage >= 10) product.strengthLevel = 'Medio'
+      else product.strengthLevel = 'Debole'
+      
+      // Update keyword count and matching keywords
+      product.keywordCount = totalKeywordsCount
+      product.matchingKeywords = relevantKeywords.map(kw => kw.keywordPhrase)
     })
 
     // Update market summary
