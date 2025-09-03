@@ -11,7 +11,7 @@ export default function UploadPage() {
             Carica i tuoi file di analisi
           </h1>
           <p className="text-lg text-gray-600">
-            Carica i file CSV per iniziare l'analisi della concorrenza di mercato
+            Carica i file CSV per iniziare l&apos;analisi della concorrenza di mercato
           </p>
         </div>
         
