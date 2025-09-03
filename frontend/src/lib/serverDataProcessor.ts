@@ -97,6 +97,10 @@ export class ServerDataProcessor {
     const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''))
     const data: KeywordRow[] = []
 
+    // Debug: Log the headers to understand CSV structure
+    console.log('CSV Headers found:', headers)
+    console.log('Looking for ASIN columns (starting with B0):', headers.filter(h => h.startsWith('B0')))
+
     for (let i = 1; i < lines.length; i++) {
       const values = this.parseCSVLine(lines[i])
       if (values.length < headers.length) continue
@@ -111,17 +115,28 @@ export class ServerDataProcessor {
       }
 
       // Extract ASIN rankings (columns that start with 'B0')
+      let rankingsFound = 0
       headers.forEach((header, index) => {
         if (header.startsWith('B0') && values[index]) {
           const ranking = parseInt(values[index])
           if (!isNaN(ranking) && ranking > 0) {
             row.rankings[header] = ranking
+            rankingsFound++
           }
         }
       })
 
+      // Debug: Log first few rows to understand the data
+      if (i <= 3) {
+        console.log(`Row ${i}: keyword="${row.keywordPhrase}", rankings found: ${rankingsFound}`, row.rankings)
+      }
+
       data.push(row)
     }
+
+    console.log(`Total keywords processed: ${data.length}`)
+    const totalRankings = data.reduce((sum, row) => sum + Object.keys(row.rankings).length, 0)
+    console.log(`Total rankings found across all keywords: ${totalRankings}`)
 
     return data
   }
@@ -132,6 +147,9 @@ export class ServerDataProcessor {
 
     const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''))
     const data: BusinessRow[] = []
+
+    // Debug: Log business data structure
+    console.log('Business CSV Headers:', headers)
 
     for (let i = 1; i < lines.length; i++) {
       const values = this.parseCSVLine(lines[i])
@@ -151,9 +169,15 @@ export class ServerDataProcessor {
         fulfillment: values[10] || undefined
       }
 
+      // Debug: Log first few business rows
+      if (i <= 3) {
+        console.log(`Business Row ${i}:`, { asin: row.asin, brand: row.brand, sales: row.sales, revenue: row.revenue })
+      }
+
       data.push(row)
     }
 
+    console.log(`Total business records processed: ${data.length}`)
     return data
   }
 
@@ -161,6 +185,9 @@ export class ServerDataProcessor {
     const lines = content.split('\n').filter(line => line.trim())
     if (lines.length < 2) throw new Error('Product data file must have at least header and one data row')
 
+    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''))
+    console.log('Product CSV Headers:', headers)
+    
     const data: ProductRow[] = []
 
     for (let i = 1; i < lines.length; i++) {
@@ -174,9 +201,15 @@ export class ServerDataProcessor {
         asinVariation: values[3] || undefined
       }
 
+      // Debug: Log first few product rows
+      if (i <= 3) {
+        console.log(`Product Row ${i}:`, { asin: row.asin, brand: row.brand })
+      }
+
       data.push(row)
     }
 
+    console.log(`Total product records processed: ${data.length}`)
     return data
   }
 
