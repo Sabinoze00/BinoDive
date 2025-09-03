@@ -32,6 +32,11 @@ interface ProductRow {
   title?: string
   imageUrl?: string
   asinVariation?: string
+  feature1?: string
+  feature2?: string
+  feature3?: string
+  feature4?: string
+  feature5?: string
 }
 
 // Using Turso database for persistent storage
@@ -225,13 +230,23 @@ export class ServerDataProcessor {
       const titleIndex = headers.findIndex(h => h.toLowerCase().includes('titolo') || h.toLowerCase().includes('title') || h.toLowerCase().includes('nome'))
       const imageUrlIndex = headers.findIndex(h => h.toLowerCase().includes('immagine'))
       const asinVariationIndex = headers.findIndex(h => h.toLowerCase().includes('asin di variazione'))
+      const feature1Index = headers.findIndex(h => h.toLowerCase().includes('feature1') || h.toLowerCase().includes('caratteristica1'))
+      const feature2Index = headers.findIndex(h => h.toLowerCase().includes('feature2') || h.toLowerCase().includes('caratteristica2'))
+      const feature3Index = headers.findIndex(h => h.toLowerCase().includes('feature3') || h.toLowerCase().includes('caratteristica3'))
+      const feature4Index = headers.findIndex(h => h.toLowerCase().includes('feature4') || h.toLowerCase().includes('caratteristica4'))
+      const feature5Index = headers.findIndex(h => h.toLowerCase().includes('feature5') || h.toLowerCase().includes('caratteristica5'))
 
       const row: ProductRow = {
         asin: asinIndex >= 0 ? values[asinIndex] || '' : values[0] || '',
         brand: brandIndex >= 0 ? values[brandIndex] || '' : 'Unknown',
         title: titleIndex >= 0 ? values[titleIndex] || undefined : undefined,
         imageUrl: imageUrlIndex >= 0 ? values[imageUrlIndex] || undefined : undefined,
-        asinVariation: asinVariationIndex >= 0 ? values[asinVariationIndex] || undefined : undefined
+        asinVariation: asinVariationIndex >= 0 ? values[asinVariationIndex] || undefined : undefined,
+        feature1: feature1Index >= 0 ? values[feature1Index] || undefined : undefined,
+        feature2: feature2Index >= 0 ? values[feature2Index] || undefined : undefined,
+        feature3: feature3Index >= 0 ? values[feature3Index] || undefined : undefined,
+        feature4: feature4Index >= 0 ? values[feature4Index] || undefined : undefined,
+        feature5: feature5Index >= 0 ? values[feature5Index] || undefined : undefined
       }
 
       // Debug: Log first few product rows
@@ -374,7 +389,7 @@ export class ServerDataProcessor {
     const processedKeywords: ProcessedKeyword[] = keywordData.map(kw => ({
       keywordPhrase: kw.keywordPhrase,
       searchVolume: kw.searchVolume,
-      relevance: kw.relevance,
+      relevance: kw.isBrand ? 0 : kw.relevance, // Set relevance to 0 for brand keywords
       isBrand: kw.isBrand,
       brandWord: kw.brandWord || null,
       rankings: kw.rankings,
@@ -438,11 +453,11 @@ export class ServerDataProcessor {
       imageUrlSample: prod.imageUrl || '',
       imageCount: 1,
       title: prod.title || (prod.brand + ' Product'), // Use actual title from CSV or fallback
-      feature1: '',
-      feature2: '',
-      feature3: '',
-      feature4: '',
-      feature5: '',
+      feature1: prod.feature1 || '',
+      feature2: prod.feature2 || '',
+      feature3: prod.feature3 || '',
+      feature4: prod.feature4 || '',
+      feature5: prod.feature5 || '',
       variationAsins: prod.asinVariation ? [prod.asinVariation] : [],
       keywordCount: 0, // Will be calculated later
       matchingKeywords: [],

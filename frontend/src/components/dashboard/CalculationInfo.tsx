@@ -67,13 +67,13 @@ export const CalculationInfo: React.FC = () => {
           </div>
 
           <div className="space-y-3">
-            <h4 className="font-semibold text-lg">🔍 Rilevanza</h4>
+            <h4 className="font-semibold text-lg">🔍 Rilevanza Keyword</h4>
             <p className="text-sm text-gray-600">
-              La rilevanza viene impostata a <strong>0%</strong> per le keyword brand,
-              altrimenti mantiene il valore originale dal file CSV.
+              La rilevanza viene impostata automaticamente a <strong>0%</strong> per le keyword brand,
+              per le altre keyword mantiene il valore originale dal file CSV.
             </p>
             <code className="block bg-gray-100 p-2 text-xs rounded">
-              Rilevanza = isBrand ? 0 : valore_originale
+              Rilevanza = isBrand ? 0 : valore_CSV_originale
             </code>
           </div>
 

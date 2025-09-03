@@ -1,8 +1,8 @@
 'use client'
 
 import React, { useState } from 'react'
+import Link from 'next/link'
 import { MainLayout } from '@/components/layout/MainLayout'
-import { FileUploader } from '@/components/upload/FileUploader'
 import { MarketSummaryCard } from '@/components/dashboard/MarketSummary'
 import { ImprovedUnifiedTable } from '@/components/dashboard/ImprovedUnifiedTable'
 import { RootKeywordsTable } from '@/components/dashboard/RootKeywordsTable'
@@ -15,7 +15,7 @@ import { AnalysisProvider, useAnalysis } from '@/hooks/useAnalysis'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { AlertCircle, CheckCircle, Loader2, ChevronUp, ChevronDown, Brain, RotateCcw } from 'lucide-react'
+import { AlertCircle, CheckCircle, Loader2, Brain, RotateCcw } from 'lucide-react'
 import { sessionTracker } from '@/lib/sessionTracker'
 
 function DashboardContent() {
@@ -24,9 +24,7 @@ function DashboardContent() {
     isLoading, 
     isUploading, 
     isUpdating,
-    uploadProgress, 
     error, 
-    uploadFiles, 
     updateKeywords,
     updateRootKeywords,
     updateCompetitors,
@@ -35,7 +33,6 @@ function DashboardContent() {
   } = useAnalysis()
 
   const [activeTab, setActiveTab] = useState<'mlk' | 'root' | 'products' | 'market'>('mlk')
-  const [uploadSectionMinimized, setUploadSectionMinimized] = useState(false)
   const [productViewMode, setProductViewMode] = useState<'cards' | 'detail' | 'table'>('table')
   const [showAuditGenerator, setShowAuditGenerator] = useState(false)
 
@@ -59,31 +56,6 @@ function DashboardContent() {
     }
   }
 
-  const handleFileUpload = async (files: {
-    keywordAnalysis: File | null
-    businessData: File | null
-    productData: File | null
-  }) => {
-    if (!files.keywordAnalysis || !files.businessData || !files.productData) {
-      return
-    }
-
-    // Track file upload
-    const startTime = Date.now()
-    await uploadFiles({
-      keywordAnalysis: files.keywordAnalysis,
-      businessData: files.businessData,
-      productData: files.productData
-    })
-    
-    // Track upload completion
-    const processingTime = Date.now() - startTime
-    sessionTracker.trackUpload(
-      ['keywordAnalysis', 'businessData', 'productData'],
-      3,
-      processingTime
-    )
-  }
 
   const handleKeywordUpdate = async (deleted: string[], restored: string[]) => {
     // Track deletions and restorations
@@ -167,43 +139,22 @@ function DashboardContent() {
           </Alert>
         )}
 
-        {/* File Uploader - Minimizable */}
-        <Card>
-          <CardContent className="p-2">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Upload Files</h3>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleNewSession}
-                  className="p-2 text-orange-600 border-orange-200 hover:bg-orange-50"
-                  title="Inizia una nuova sessione pulita"
-                >
-                  <RotateCcw className="w-4 h-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setUploadSectionMinimized(!uploadSectionMinimized)}
-                  className="p-2"
-                >
-                  {uploadSectionMinimized ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
-                </Button>
-              </div>
-            </div>
-            {!uploadSectionMinimized && (
-              <div className="mt-2">
-                <FileUploader
-                  onFilesUploaded={handleFileUpload}
-                  isUploading={isUploading}
-                  uploadProgress={uploadProgress}
-                  error={error}
-                />
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        {/* New Session Button - only shows when data exists */}
+        {data && (
+          <Card>
+            <CardContent className="p-4 text-center">
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={handleNewSession}
+                className="text-orange-600 border-orange-200 hover:bg-orange-50"
+              >
+                <RotateCcw className="w-4 h-4 mr-2" />
+                Inizia una nuova sessione
+              </Button>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Success Message */}
         {data && !isLoading && !error && (
@@ -384,7 +335,7 @@ function DashboardContent() {
         {/* Getting Started Guide */}
         {!data && !isLoading && !isUploading && (
           <div className="text-center py-12 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-            <div className="max-w-md mx-auto space-y-4">
+            <div className="max-w-md mx-auto space-y-6">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
                 <AlertCircle className="w-8 h-8 text-blue-600" />
               </div>
@@ -392,9 +343,14 @@ function DashboardContent() {
                 Benvenuto in BinoDive
               </h3>
               <p className="text-gray-600">
-                Per iniziare l&apos;analisi dei competitor Amazon, carica i tre file CSV richiesti:
+                Per iniziare l&apos;analisi dei competitor Amazon, carica i tre file CSV richiesti.
               </p>
-              <ul className="text-sm text-gray-500 space-y-1">
+              <Link href="/upload">
+                <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+                  Carica i tuoi file CSV
+                </Button>
+              </Link>
+              <ul className="text-sm text-gray-500 space-y-1 mt-4">
                 <li>• File di analisi keyword (keyword_analysis...DATA.csv)</li>
                 <li>• File di dati business (Helium_10_Xray...)</li>
                 <li>• File di dati prodotto (KeepaExport...)</li>
