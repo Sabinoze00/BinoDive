@@ -501,6 +501,18 @@ export class ServerDataProcessor {
     console.log('🔧 Starting product strength calculation...')
     console.log('Total products to process:', products.length)
     console.log('Total processed keywords:', processedKeywords.length)
+    console.log('🔍 Product ASINs vs Keyword ASINs comparison:')
+    
+    const productAsins = new Set(products.map(p => p.asin))
+    const keywordAsins = new Set()
+    processedKeywords.forEach(kw => {
+      Object.keys(kw.rankings).forEach(asin => keywordAsins.add(asin))
+    })
+    
+    console.log('- Product ASINs sample:', Array.from(productAsins).slice(0, 5))
+    console.log('- Keyword ranking ASINs sample:', Array.from(keywordAsins).slice(0, 5))
+    console.log('- Products that have keyword rankings:', Array.from(productAsins).filter(asin => keywordAsins.has(asin)).length)
+    console.log('- Products without keyword rankings:', Array.from(productAsins).filter(asin => !keywordAsins.has(asin)).length)
     
     products.forEach((product, index) => {
       const relevantKeywords = processedKeywords.filter(kw => 
