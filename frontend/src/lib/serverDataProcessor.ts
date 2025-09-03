@@ -94,7 +94,11 @@ export class ServerDataProcessor {
     const lines = content.split('\n').filter(line => line.trim())
     if (lines.length < 2) throw new Error('Keyword file must have at least header and one data row')
 
-    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''))
+    // Detect separator (try semicolon first, then comma)
+    const separator = lines[0].includes(';') ? ';' : ','
+    console.log('Detected CSV separator:', separator)
+    
+    const headers = lines[0].split(separator).map(h => h.trim().replace(/"/g, ''))
     const data: KeywordRow[] = []
 
     // Debug: Log the headers to understand CSV structure
@@ -102,22 +106,23 @@ export class ServerDataProcessor {
     console.log('Looking for ASIN columns (starting with B0):', headers.filter(h => h.startsWith('B0')))
 
     for (let i = 1; i < lines.length; i++) {
-      const values = this.parseCSVLine(lines[i])
-      if (values.length < headers.length) continue
+      const values = separator === ';' ? lines[i].split(';') : this.parseCSVLine(lines[i])
+      if (values.length < 5) continue // Need at least basic fields
 
+      // Map based on actual CSV structure from logs
       const row: KeywordRow = {
-        keywordPhrase: values[0] || '',
-        searchVolume: parseInt(values[1]) || 0,
-        relevance: parseFloat(values[2]) || 0,
-        isBrand: values[3]?.toLowerCase() === 'true' || values[3] === '1',
-        brandWord: values[4] || undefined,
+        keywordPhrase: (values[0] || '').replace(';0', ''), // Remove ";0" suffix
+        relevance: parseFloat(values[1]) || 0,
+        searchVolume: parseInt(values[2]) || 0,
+        isBrand: values[9]?.toLowerCase() === 'true' || values[9] === '1',
+        brandWord: values[10] || undefined,
         rankings: {}
       }
 
       // Extract ASIN rankings (columns that start with 'B0')
       let rankingsFound = 0
       headers.forEach((header, index) => {
-        if (header.startsWith('B0') && values[index]) {
+        if (header.startsWith('B0') && values[index] && values[index].trim() !== '') {
           const ranking = parseInt(values[index])
           if (!isNaN(ranking) && ranking > 0) {
             row.rankings[header] = ranking
@@ -145,28 +150,44 @@ export class ServerDataProcessor {
     const lines = content.split('\n').filter(line => line.trim())
     if (lines.length < 2) throw new Error('Business data file must have at least header and one data row')
 
-    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''))
+    // Detect separator 
+    const separator = lines[0].includes(';') ? ';' : ','
+    const headers = lines[0].split(separator).map(h => h.trim().replace(/"/g, ''))
     const data: BusinessRow[] = []
 
     // Debug: Log business data structure
     console.log('Business CSV Headers:', headers)
 
     for (let i = 1; i < lines.length; i++) {
-      const values = this.parseCSVLine(lines[i])
-      if (values.length < headers.length) continue
+      const values = separator === ';' ? lines[i].split(';') : this.parseCSVLine(lines[i])
+      if (values.length < 5) continue
+
+      // Map based on actual CSV structure from logs
+      // From logs: ASIN is at index 3, Brand at index 6, etc.
+      const asinIndex = headers.findIndex(h => h.toLowerCase().includes('asin'))
+      const brandIndex = headers.findIndex(h => h.toLowerCase().includes('brand'))
+      const salesIndex = headers.findIndex(h => h.toLowerCase().includes('asin sales'))
+      const revenueIndex = headers.findIndex(h => h.toLowerCase().includes('asin revenue'))
+      const imageUrlIndex = headers.findIndex(h => h.toLowerCase().includes('image url'))
+      const sellerCountryIndex = headers.findIndex(h => h.toLowerCase().includes('seller country'))
+      const ratingsIndex = headers.findIndex(h => h.toLowerCase().includes('ratings'))
+      const categoryIndex = headers.findIndex(h => h.toLowerCase().includes('category'))
+      const fulfillmentIndex = headers.findIndex(h => h.toLowerCase().includes('fulfillment'))
+      const creationDateIndex = headers.findIndex(h => h.toLowerCase().includes('creation date'))
+      const priceIndex = headers.findIndex(h => h.toLowerCase().includes('price'))
 
       const row: BusinessRow = {
-        asin: values[0] || '',
-        brand: values[1] || '',
-        imageUrl: values[2] || undefined,
-        sellerCountry: values[3] || undefined,
-        ratings: parseFloat(values[4]) || undefined,
-        creationDate: values[5] ? new Date(values[5]) : undefined,
-        price: values[6] || undefined,
-        sales: parseInt(values[7]) || undefined,
-        revenue: values[8] || undefined,
-        category: values[9] || undefined,
-        fulfillment: values[10] || undefined
+        asin: asinIndex >= 0 ? values[asinIndex] || '' : '',
+        brand: brandIndex >= 0 ? values[brandIndex] || '' : '',
+        imageUrl: imageUrlIndex >= 0 ? values[imageUrlIndex] || undefined : undefined,
+        sellerCountry: sellerCountryIndex >= 0 ? values[sellerCountryIndex] || undefined : undefined,
+        ratings: ratingsIndex >= 0 ? parseFloat(values[ratingsIndex]) || undefined : undefined,
+        creationDate: creationDateIndex >= 0 && values[creationDateIndex] ? new Date(values[creationDateIndex]) : undefined,
+        price: priceIndex >= 0 ? values[priceIndex] || undefined : undefined,
+        sales: salesIndex >= 0 ? parseInt(values[salesIndex]) || undefined : undefined,
+        revenue: revenueIndex >= 0 ? values[revenueIndex] || undefined : undefined,
+        category: categoryIndex >= 0 ? values[categoryIndex] || undefined : undefined,
+        fulfillment: fulfillmentIndex >= 0 ? values[fulfillmentIndex] || undefined : undefined
       }
 
       // Debug: Log first few business rows
@@ -185,25 +206,34 @@ export class ServerDataProcessor {
     const lines = content.split('\n').filter(line => line.trim())
     if (lines.length < 2) throw new Error('Product data file must have at least header and one data row')
 
-    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''))
+    // Detect separator
+    const separator = lines[0].includes(';') ? ';' : ','
+    const headers = lines[0].split(separator).map(h => h.trim().replace(/"/g, ''))
     console.log('Product CSV Headers:', headers)
     
     const data: ProductRow[] = []
 
     for (let i = 1; i < lines.length; i++) {
-      const values = this.parseCSVLine(lines[i])
+      const values = separator === ';' ? lines[i].split(';') : this.parseCSVLine(lines[i])
       if (values.length < 2) continue
 
+      // Map based on actual CSV structure from logs
+      // From logs: ASIN is at index 0, but brand should be taken from index 17 (Marca)
+      const asinIndex = headers.findIndex(h => h.toLowerCase().includes('asin'))
+      const brandIndex = headers.findIndex(h => h.toLowerCase().includes('marca'))
+      const imageUrlIndex = headers.findIndex(h => h.toLowerCase().includes('immagine'))
+      const asinVariationIndex = headers.findIndex(h => h.toLowerCase().includes('asin di variazione'))
+
       const row: ProductRow = {
-        asin: values[0] || '',
-        brand: values[1] || '',
-        imageUrl: values[2] || undefined,
-        asinVariation: values[3] || undefined
+        asin: asinIndex >= 0 ? values[asinIndex] || '' : values[0] || '',
+        brand: brandIndex >= 0 ? values[brandIndex] || '' : 'Unknown',
+        imageUrl: imageUrlIndex >= 0 ? values[imageUrlIndex] || undefined : undefined,
+        asinVariation: asinVariationIndex >= 0 ? values[asinVariationIndex] || undefined : undefined
       }
 
       // Debug: Log first few product rows
       if (i <= 3) {
-        console.log(`Product Row ${i}:`, { asin: row.asin, brand: row.brand })
+        console.log(`Product Row ${i}:`, { asin: row.asin, brand: row.brand, imageUrl: row.imageUrl?.substring(0, 50) })
       }
 
       data.push(row)
